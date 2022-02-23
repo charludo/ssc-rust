@@ -2,6 +2,42 @@ include!(concat!(env!("OUT_DIR"), "/grammar.rs"));
 
 use grammar::{Node, Rule};
 
+fn flatten(node: Node) -> Node {
+    let mut buffer = vec![];
+    for node in node.children {
+        flatten_rec(node, &mut buffer)
+    }
+    Node {
+        rule: node.rule,
+        start: node.start,
+        end: node.end,
+        children: buffer,
+        alternative: node.alternative,
+    }
+}
+
+fn flatten_rec(node: Node, buffer: &mut Vec<Node>) {
+    match node.rule {
+        // flatten these nodes
+        Rule::Terminal if node.start == node.end => {}
+        Rule::Terminal => {
+            for node in node.children {
+                flatten_rec(node, buffer)
+            }
+        }
+        // not important
+        Rule::EOI => {}
+        // #[cfg(feature = "no-ignored")]
+        Rule::IGNORE => {}
+        // #[cfg(not(feature = "no-ignored"))]
+        // Rule::IGNORE if node.start == node.end => {}
+        // #[cfg(feature = "no-unnamed")]
+        Rule::WHITESPACE => {}
+        // #[cfg(not(feature = "no-unnamed"))]
+        _ => buffer.push(flatten(node)),
+    }
+}
+
 fn main() {
     let mut parser = grammar::PEG::new();
 
@@ -34,12 +70,6 @@ fn main() {
                             truths.append(&mut walk(child, input));
                         }
                         truths
-                    }
-                    Rule::COMMENT => {
-                        vec![]
-                    }
-                    Rule::WS => {
-                        vec![]
                     }
                     Rule::EOI => {
                         vec![]
@@ -100,8 +130,10 @@ fn main() {
                     }
                 }
             }
-
-            println!("result: {:?}", walk(&node, input));
+            let mut nodes: Vec<Node> = Vec::new();
+            flatten_rec(node, &mut nodes);
+            // println!("{:?}", nodes);
+            println!("result: {:?}", walk(&nodes[0], input));
         }
         Err((line_no, col_no)) => {
             eprintln!("parser error at {}:{}", line_no, col_no);

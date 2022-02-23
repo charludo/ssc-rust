@@ -1,9 +1,10 @@
-source <- order? WS ((COMMENT / proposition / builtin) WS)* EOI;
+source <- IGNORE order? IGNORE ((COMMENT / proposition / builtin) IGNORE)* EOI;
 
-WS <- WHITESPACE re#[\s]+# WS / WHITESPACE;
-COMMENT <- WS "--" re#[^\n]*\n#;
+IGNORE <- WHITESPACE / NEWLINE / COMMENT;
+NEWLINE <- (re#[\r\n]#);
+COMMENT <- "--" (re#[^\r\n]# .)*;
 
-order <- WS "#" NUMBER;
+order <- "#" NUMBER;
 proposition <- prop / ("(" prop ")");
 prop <- (expression / proposition) COMPARATOR (expression / proposition);
 
@@ -15,10 +16,10 @@ args <- CELL ","? (CELL ","?)+;
 
 value <- CELL / NUMBER / list;
 
-list <- WS "(" (expression ","?)+ ")" WS;
-CELL <- WS re#[a-z]+[1-9][0-9]*# WS;
-NUMBER <- WS re#[1-9][0-9]*# WS;
+list <- IGNORE "(" (expression ","?)+ ")" IGNORE;
+CELL <- IGNORE re#[a-z]+[1-9][0-9]*# IGNORE;
+NUMBER <- IGNORE re#[1-9][0-9]*# IGNORE;
 
-OPERATOR <- WS ("+" / "-" / "*" / "|") WS;
-COMPARATOR <- WS ("=" / "<" / ">" / "<=" / ">=" / "!=" / "||") WS;
-PREFIX <- WS ("!!" / "~~") WS;
+OPERATOR <- IGNORE ("+" / "-" / "*" / "|") IGNORE;
+COMPARATOR <- IGNORE ("=" / "<" / ">" / "<=" / ">=" / "!=" / "||") IGNORE;
+PREFIX <- IGNORE ("!!" / "~~") IGNORE;
