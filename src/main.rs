@@ -38,11 +38,11 @@ fn flatten_rec(node: Node, buffer: &mut Vec<Node>) {
     }
 }
 
-fn walk<'a>(node: &'a Node, input: &'a str) -> Vec<&'a str> {
-    println!("RULE: {:?\n}, VALUE: >{}<", node.rule, node.as_str(input));
+fn walk<'a>(node: &'a Node, input: &'a str) -> Vec<String> {
+    // println!("RULE: {:?\n}, VALUE: >{}<", node.rule, node.as_str(input));
     match node.rule {
         Rule::source => {
-            let mut truths: Vec<&str> = Vec::new();
+            let mut truths: Vec<String> = Vec::new();
             for child in &node.children {
                 // println!("here");
                 truths.append(&mut walk(child, input));
@@ -50,72 +50,63 @@ fn walk<'a>(node: &'a Node, input: &'a str) -> Vec<&'a str> {
             truths
         }
         Rule::order => {
-            let mut truths: Vec<&str> = Vec::new();
-            for child in &node.children {
-                truths.append(&mut walk(child, input));
-            }
-            truths
+            let order: u8 = node.children[0].as_str(input).trim().parse().unwrap();
+            println!("the order of the puzzle is: {}", order);
+            vec![]
         }
         Rule::EOI => {
             vec![]
         }
         Rule::proposition => {
-            let mut truths: Vec<&str> = Vec::new();
+            let mut truths: Vec<String> = Vec::new();
             for child in &node.children {
                 truths.append(&mut walk(child, input));
             }
             truths
         }
         Rule::prop => {
-            let mut truths: Vec<&str> = Vec::new();
+            let mut truths: Vec<String> = Vec::new();
             for child in &node.children {
                 truths.append(&mut walk(child, input));
             }
             truths
         }
         Rule::expression => {
-            vec!["expression"]
+            vec!["expression".to_owned()]
         }
         Rule::exp => {
-            vec!["exp"]
+            vec!["exp".to_owned()]
         }
         Rule::builtin => {
-            vec!["builtin"]
+            vec!["builtin".to_owned()]
         }
         Rule::args => {
-            vec!["args"]
+            vec!["args".to_owned()]
         }
         Rule::value => {
-            vec!["value"]
+            vec!["value".to_owned()]
         }
         Rule::list => {
-            vec!["list"]
+            vec!["list".to_owned()]
         }
         Rule::CELL => {
-            vec!["cell"]
+            vec!["cell".to_owned()]
         }
         Rule::NUMBER => {
-            let mut truths: Vec<&str> = Vec::new();
-            for child in &node.children {
-                truths.append(&mut walk(child, input));
-            }
-            truths
+            let n: u8 = node.as_str(input).trim().parse().unwrap();
+            vec![n.to_string()]
         }
         Rule::OPERATOR => {
-            vec!["operator"]
+            vec!["operator".to_owned()]
         }
         Rule::COMPARATOR => {
-            vec!["comparator"]
+            vec!["comparator".to_owned()]
         }
         Rule::PREFIX => {
-            vec!["prefix"]
+            vec!["prefix".to_owned()]
         }
         Rule::Terminal => {
-            let mut truths: Vec<&str> = Vec::new();
-            for child in &node.children {
-                truths.append(&mut walk(child, input));
-            }
-            truths
+            vec![node.as_str(input).to_owned()]
         }
         _ => {
             println!("{:?\n}", node);
