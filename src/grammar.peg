@@ -1,7 +1,6 @@
 source <- order? (COMMENT / proposition / builtin)*;
 
-WS <- WHITESPACE / (WHITESPACE BLANKS)*;
-BLANKS <- "\n" / "\r" / "\t";
+WS <- WHITESPACE re#[\s]+# WS / WHITESPACE;
 COMMENT <- WS "--" re#[^\n]*\n#;
 
 order <- WS "#" NUMBER;

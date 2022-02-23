@@ -21,7 +21,7 @@ fn main() {
             //     children.into_iter().filter(|c| c.rule.to_string() != "WHITESPACE").collect::<Vec<Node>>()
             // }
             fn walk<'a>(node: &'a Node, input: &'a str) -> Vec<&'a str> {
-                println!("{:?\n}", node.rule);
+                println!("RULE: {:?\n}, VALUE: >{}<", node.rule, node.as_str(input));
                 match node.rule {
                     Rule::source => {
                         let mut truths: Vec<&str> = Vec::new();
@@ -31,10 +31,17 @@ fn main() {
                         truths
                     }
                     Rule::order => {
-                        vec!["order"]
+                        let mut truths: Vec<&str> = Vec::new();
+                        for child in &node.children {
+                            truths.append(&mut walk(child, input));
+                        }
+                        truths
                     }
                     Rule::COMMENT => {
                         vec!["COMMENT"]
+                    }
+                    Rule::WS => {
+                        vec!["WS"]
                     }
                     Rule::proposition => {
                         vec!["proposition"]
@@ -64,7 +71,11 @@ fn main() {
                         vec!["cell"]
                     }
                     Rule::NUMBER => {
-                        vec!["number"]
+                        let mut truths: Vec<&str> = Vec::new();
+                        for child in &node.children {
+                            truths.append(&mut walk(child, input));
+                        }
+                        truths
                     }
                     Rule::OPERATOR => {
                         vec!["operator"]
@@ -76,9 +87,10 @@ fn main() {
                         vec!["prefix"]
                     }
                     Rule::Terminal => {
-                        vec!["Terminal"]
+                        vec![node.as_str(input)]
                     }
                     _ => {
+                        println!("{:?\n}", node);
                         unreachable!()
                     }
                 }
