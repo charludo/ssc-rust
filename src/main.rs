@@ -20,7 +20,7 @@ fn flatten_rec(node: Node, buffer: &mut Vec<Node>) {
     match node.rule {
         // flatten these nodes
         Rule::Terminal if node.start == node.end => {}
-        Rule::Terminal => {
+        Rule::Terminal | Rule::prop | Rule::exp => {
             for node in node.children {
                 flatten_rec(node, buffer)
             }
@@ -54,9 +54,6 @@ fn walk<'a>(node: &'a Node, input: &'a str) -> Vec<String> {
             println!("the order of the puzzle is: {}", order);
             vec![]
         }
-        Rule::EOI => {
-            vec![]
-        }
         Rule::proposition => {
             let mut truths: Vec<String> = Vec::new();
             for child in &node.children {
@@ -64,43 +61,33 @@ fn walk<'a>(node: &'a Node, input: &'a str) -> Vec<String> {
             }
             truths
         }
-        Rule::prop => {
-            let mut truths: Vec<String> = Vec::new();
-            for child in &node.children {
-                truths.append(&mut walk(child, input));
-            }
-            truths
-        }
         Rule::expression => {
-            vec!["expression".to_owned()]
-        }
-        Rule::exp => {
-            vec!["exp".to_owned()]
+            vec![node.as_str(input).to_owned()]
         }
         Rule::builtin => {
-            vec!["builtin".to_owned()]
+            vec![node.as_str(input).to_owned()]
         }
         Rule::args => {
-            vec!["args".to_owned()]
+            vec![node.as_str(input).to_owned()]
         }
         Rule::value => {
-            vec!["value".to_owned()]
+            vec![node.as_str(input).to_owned()]
         }
         Rule::list => {
-            vec!["list".to_owned()]
+            vec![node.as_str(input).to_owned()]
         }
         Rule::CELL => {
-            vec!["cell".to_owned()]
+            vec![node.as_str(input).to_owned()]
         }
         Rule::NUMBER => {
             let n: u8 = node.as_str(input).trim().parse().unwrap();
             vec![n.to_string()]
         }
         Rule::OPERATOR => {
-            vec!["operator".to_owned()]
+            vec![node.as_str(input).to_owned()]
         }
         Rule::COMPARATOR => {
-            vec!["comparator".to_owned()]
+            vec![node.as_str(input).to_owned()]
         }
         Rule::PREFIX => {
             vec!["prefix".to_owned()]
