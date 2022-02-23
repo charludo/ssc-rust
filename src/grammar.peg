@@ -20,6 +20,6 @@ list <- IGNORE "(" (expression ","?)+ ")" IGNORE;
 CELL <- IGNORE re#[a-z]+[1-9][0-9]*# IGNORE;
 NUMBER <- IGNORE re#[1-9][0-9]*# IGNORE;
 
+COMPARATOR <- IGNORE ("<=" / ">=" / "<" / ">" / "=" / "!=" / "||") IGNORE;
 OPERATOR <- IGNORE ("+" / "-" / "*" / "|") IGNORE;
-COMPARATOR <- IGNORE ("=" / "<" / ">" / "<=" / ">=" / "!=" / "||") IGNORE;
 PREFIX <- IGNORE ("!!" / "~~") IGNORE;

@@ -90,7 +90,7 @@ fn walk<'a>(node: &'a Node, input: &'a str) -> Vec<String> {
             vec![node.as_str(input).to_owned()]
         }
         Rule::PREFIX => {
-            vec!["prefix".to_owned()]
+            vec![node.as_str(input).to_owned()]
         }
         Rule::Terminal => {
             vec![node.as_str(input).to_owned()]
