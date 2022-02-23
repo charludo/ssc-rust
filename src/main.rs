@@ -38,6 +38,92 @@ fn flatten_rec(node: Node, buffer: &mut Vec<Node>) {
     }
 }
 
+fn walk<'a>(node: &'a Node, input: &'a str) -> Vec<&'a str> {
+    println!("RULE: {:?\n}, VALUE: >{}<", node.rule, node.as_str(input));
+    match node.rule {
+        Rule::source => {
+            let mut truths: Vec<&str> = Vec::new();
+            for child in &node.children {
+                // println!("here");
+                truths.append(&mut walk(child, input));
+            }
+            truths
+        }
+        Rule::order => {
+            let mut truths: Vec<&str> = Vec::new();
+            for child in &node.children {
+                truths.append(&mut walk(child, input));
+            }
+            truths
+        }
+        Rule::EOI => {
+            vec![]
+        }
+        Rule::proposition => {
+            let mut truths: Vec<&str> = Vec::new();
+            for child in &node.children {
+                truths.append(&mut walk(child, input));
+            }
+            truths
+        }
+        Rule::prop => {
+            let mut truths: Vec<&str> = Vec::new();
+            for child in &node.children {
+                truths.append(&mut walk(child, input));
+            }
+            truths
+        }
+        Rule::expression => {
+            vec!["expression"]
+        }
+        Rule::exp => {
+            vec!["exp"]
+        }
+        Rule::builtin => {
+            vec!["builtin"]
+        }
+        Rule::args => {
+            vec!["args"]
+        }
+        Rule::value => {
+            vec!["value"]
+        }
+        Rule::list => {
+            vec!["list"]
+        }
+        Rule::CELL => {
+            vec!["cell"]
+        }
+        Rule::NUMBER => {
+            let mut truths: Vec<&str> = Vec::new();
+            for child in &node.children {
+                truths.append(&mut walk(child, input));
+            }
+            truths
+        }
+        Rule::OPERATOR => {
+            vec!["operator"]
+        }
+        Rule::COMPARATOR => {
+            vec!["comparator"]
+        }
+        Rule::PREFIX => {
+            vec!["prefix"]
+        }
+        Rule::Terminal => {
+            let mut truths: Vec<&str> = Vec::new();
+            for child in &node.children {
+                truths.append(&mut walk(child, input));
+            }
+            truths
+        }
+        _ => {
+            println!("{:?\n}", node);
+            unreachable!()
+        }
+    }
+}
+
 fn main() {
     let mut parser = grammar::PEG::new();
 
@@ -53,91 +139,6 @@ fn main() {
 
     match parser.parse(input) {
         Ok(node) => {
-            fn walk<'a>(node: &'a Node, input: &'a str) -> Vec<&'a str> {
-                println!("RULE: {:?\n}, VALUE: >{}<", node.rule, node.as_str(input));
-                match node.rule {
-                    Rule::source => {
-                        let mut truths: Vec<&str> = Vec::new();
-                        for child in &node.children {
-                            // println!("here");
-                            truths.append(&mut walk(child, input));
-                        }
-                        truths
-                    }
-                    Rule::order => {
-                        let mut truths: Vec<&str> = Vec::new();
-                        for child in &node.children {
-                            truths.append(&mut walk(child, input));
-                        }
-                        truths
-                    }
-                    Rule::EOI => {
-                        vec![]
-                    }
-                    Rule::proposition => {
-                        let mut truths: Vec<&str> = Vec::new();
-                        for child in &node.children {
-                            truths.append(&mut walk(child, input));
-                        }
-                        truths
-                    }
-                    Rule::prop => {
-                        let mut truths: Vec<&str> = Vec::new();
-                        for child in &node.children {
-                            truths.append(&mut walk(child, input));
-                        }
-                        truths
-                    }
-                    Rule::expression => {
-                        vec!["expression"]
-                    }
-                    Rule::exp => {
-                        vec!["exp"]
-                    }
-                    Rule::builtin => {
-                        vec!["builtin"]
-                    }
-                    Rule::args => {
-                        vec!["args"]
-                    }
-                    Rule::value => {
-                        vec!["value"]
-                    }
-                    Rule::list => {
-                        vec!["list"]
-                    }
-                    Rule::CELL => {
-                        vec!["cell"]
-                    }
-                    Rule::NUMBER => {
-                        let mut truths: Vec<&str> = Vec::new();
-                        for child in &node.children {
-                            truths.append(&mut walk(child, input));
-                        }
-                        truths
-                    }
-                    Rule::OPERATOR => {
-                        vec!["operator"]
-                    }
-                    Rule::COMPARATOR => {
-                        vec!["comparator"]
-                    }
-                    Rule::PREFIX => {
-                        vec!["prefix"]
-                    }
-                    Rule::Terminal => {
-                        let mut truths: Vec<&str> = Vec::new();
-                        for child in &node.children {
-                            truths.append(&mut walk(child, input));
-                        }
-                        truths
-                    }
-                    _ => {
-                        println!("{:?\n}", node);
-                        unreachable!()
-                    }
-                }
-            }
             let mut nodes: Vec<Node> = Vec::new();
             flatten_rec(node, &mut nodes);
             // println!("{:?}", nodes);
