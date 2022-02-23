@@ -1,25 +1,25 @@
-source <- order? (COMMENT / proposition / builtin)+ EOI;
+source <- order? (COMMENT / proposition / builtin)*;
 
-WS <- blanks*;
-blanks <- WHITESPACE / "\n" / "\r" / "\t";
+WS <- WHITESPACE / (WHITESPACE BLANKS)*;
+BLANKS <- "\n" / "\r" / "\t";
 COMMENT <- WS "--" re#[^\n]*\n#;
 
-order <- WS "#" number;
+order <- WS "#" NUMBER;
 proposition <- prop / ("(" prop ")");
-prop <- (expression / proposition) comparator (expression / proposition);
+prop <- (expression / proposition) COMPARATOR (expression / proposition);
 
 expression <- exp / ("(" exp ")");
-exp <- value / (expression operator expression);
+exp <- value / (expression OPERATOR expression);
 
-builtin <- prefix (args / ("(" args ")"));
-args <- cell ","? (cell ","?)+;
+builtin <- PREFIX (args / ("(" args ")"));
+args <- CELL ","? (CELL ","?)+;
 
-value <- cell / number / list;
+value <- CELL / NUMBER / list;
 
-cell <- WS re#[a-z]+[1-9][0-9]*# WS;
-number <- WS re#[1-9][0-9]*# WS;
 list <- WS "(" (expression ","?)+ ")" WS;
+CELL <- WS re#[a-z]+[1-9][0-9]*# WS;
+NUMBER <- WS re#[1-9][0-9]*# WS;
 
-operator <- WS ("+" / "-" / "*" / "|") WS;
-comparator <- WS ("=" / "<" / ">" / "<=" / ">=" / "!=" / "||") WS;
-prefix <- WS ("!!" / "~~") WS;
+OPERATOR <- WS ("+" / "-" / "*" / "|") WS;
+COMPARATOR <- WS ("=" / "<" / ">" / "<=" / ">=" / "!=" / "||") WS;
+PREFIX <- WS ("!!" / "~~") WS;
