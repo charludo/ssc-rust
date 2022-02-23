@@ -75,10 +75,18 @@ fn main() {
                         vec![]
                     }
                     Rule::proposition => {
-                        vec!["proposition"]
+                        let mut truths: Vec<&str> = Vec::new();
+                        for child in &node.children {
+                            truths.append(&mut walk(child, input));
+                        }
+                        truths
                     }
                     Rule::prop => {
-                        vec!["prop"]
+                        let mut truths: Vec<&str> = Vec::new();
+                        for child in &node.children {
+                            truths.append(&mut walk(child, input));
+                        }
+                        truths
                     }
                     Rule::expression => {
                         vec!["expression"]
