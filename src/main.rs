@@ -17,15 +17,13 @@ fn main() {
 
     match parser.parse(input) {
         Ok(node) => {
-            // fn drop_whitespace(children: Vec<Node>) -> Vec<Node> {
-            //     children.into_iter().filter(|c| c.rule.to_string() != "WHITESPACE").collect::<Vec<Node>>()
-            // }
             fn walk<'a>(node: &'a Node, input: &'a str) -> Vec<&'a str> {
                 println!("RULE: {:?\n}, VALUE: >{}<", node.rule, node.as_str(input));
                 match node.rule {
                     Rule::source => {
                         let mut truths: Vec<&str> = Vec::new();
                         for child in &node.children {
+                            // println!("here");
                             truths.append(&mut walk(child, input));
                         }
                         truths
@@ -38,10 +36,13 @@ fn main() {
                         truths
                     }
                     Rule::COMMENT => {
-                        vec!["COMMENT"]
+                        vec![]
                     }
                     Rule::WS => {
-                        vec!["WS"]
+                        vec![]
+                    }
+                    Rule::EOI => {
+                        vec![]
                     }
                     Rule::proposition => {
                         vec!["proposition"]
@@ -87,7 +88,11 @@ fn main() {
                         vec!["prefix"]
                     }
                     Rule::Terminal => {
-                        vec![node.as_str(input)]
+                        let mut truths: Vec<&str> = Vec::new();
+                        for child in &node.children {
+                            truths.append(&mut walk(child, input));
+                        }
+                        truths
                     }
                     _ => {
                         println!("{:?\n}", node);

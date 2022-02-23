@@ -1,4 +1,4 @@
-source <- order? (COMMENT / proposition / builtin)*;
+source <- order? WS ((COMMENT / proposition / builtin) WS)* EOI;
 
 WS <- WHITESPACE re#[\s]+# WS / WHITESPACE;
 COMMENT <- WS "--" re#[^\n]*\n#;
