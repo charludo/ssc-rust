@@ -1,14 +1,14 @@
-source <- order? (comment / proposition / builtin)+ EOI;
+source <- order? (COMMENT / proposition / builtin)+ EOI;
 
 WS <- blanks*;
 blanks <- WHITESPACE / "\n" / "\r" / "\t";
-COMMENT <- WS "--" re#^[^\n]*# "\n";
+COMMENT <- WS "--" re#[^\n]*\n#;
 
-order <- "#" number;
-proposition <- prop \ ("(" prop ")");
+order <- WS "#" number;
+proposition <- prop / ("(" prop ")");
 prop <- (expression / proposition) comparator (expression / proposition);
 
-expression <- exp \ ("(" exp ")");
+expression <- exp / ("(" exp ")");
 exp <- value / (expression operator expression);
 
 builtin <- prefix (args / ("(" args ")"));
@@ -16,9 +16,9 @@ args <- cell ","? (cell ","?)+;
 
 value <- cell / number / list;
 
-list <- WS "(" (expression, ","?)+ ")" WS;
 cell <- WS re#[a-z]+[1-9][0-9]*# WS;
 number <- WS re#[1-9][0-9]*# WS;
+list <- WS "(" (expression ","?)+ ")" WS;
 
 operator <- WS ("+" / "-" / "*" / "|") WS;
 comparator <- WS ("=" / "<" / ">" / "<=" / ">=" / "!=" / "||") WS;
