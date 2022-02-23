@@ -18,7 +18,7 @@ fn main() {
     match parser.parse(input) {
         Ok(node) => {
             // fn drop_whitespace(children: Vec<Node>) -> Vec<Node> {
-                // children.into_iter().filter(|c| c.rule.to_string() != "WHITESPACE").collect::<Vec<Node>>()
+            //     children.into_iter().filter(|c| c.rule.to_string() != "WHITESPACE").collect::<Vec<Node>>()
             // }
             fn walk<'a>(node: &'a Node, input: &'a str) -> Vec<&'a str> {
                 match node.rule {
@@ -34,7 +34,7 @@ fn main() {
                         truths
                     }
                     _ => {
-                       unreachable!()
+                        unreachable!()
                     }
                 }
             }
