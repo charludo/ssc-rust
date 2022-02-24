@@ -20,7 +20,7 @@ fn flatten_rec(node: Node, buffer: &mut Vec<Node>) {
     match node.rule {
         // flatten these nodes
         Rule::Terminal if node.start == node.end => {}
-        Rule::Terminal | Rule::prop | Rule::exp => {
+        Rule::Terminal => {
             for node in node.children {
                 flatten_rec(node, buffer)
             }
@@ -65,9 +65,6 @@ fn walk<'a>(node: &'a Node, input: &'a str) -> Vec<String> {
             vec![node.as_str(input).to_owned()]
         }
         Rule::builtin => {
-            vec![node.as_str(input).to_owned()]
-        }
-        Rule::args => {
             vec![node.as_str(input).to_owned()]
         }
         Rule::value => {

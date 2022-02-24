@@ -1,18 +1,16 @@
-source <- IGNORE order? IGNORE ((COMMENT / proposition / builtin) IGNORE)* EOI;
+source <- IGNORE order? IGNORE ((proposition / builtin) IGNORE)* EOI;
 
 IGNORE <- WHITESPACE / NEWLINE / COMMENT;
 NEWLINE <- (re#[\r\n]#);
 COMMENT <- "--" (re#[^\r\n]# .)*;
 
 order <- "#" NUMBER;
-proposition <- prop / ("(" prop ")");
-prop <- (expression / proposition) COMPARATOR (expression / proposition);
+proposition <- ("(" (expression / proposition) COMPARATOR (expression / proposition) ")")
+				/ (expression / proposition) COMPARATOR (expression / proposition);
 
-expression <- exp / ("(" exp ")");
-exp <- value / (expression OPERATOR expression);
+expression <- ("(" expression OPERATOR expression ")") / (expression OPERATOR expression) / value;
 
-builtin <- PREFIX (args / ("(" args ")"));
-args <- CELL ","? (CELL ","?)+;
+builtin <- PREFIX ((CELL ","? (CELL ","?)+) / ("(" CELL ","? (CELL ","?)+ ")"));
 
 value <- CELL / NUMBER / list;
 
