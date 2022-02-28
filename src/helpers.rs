@@ -55,7 +55,7 @@ fn is_allowed(left: String, right: String) -> bool {
     true
 }
 
-fn and_clause(left: Vec<String>, right: Vec<String>) -> Vec<String> {
+pub fn and_clause(left: Vec<String>, right: Vec<String>) -> Vec<String> {
     let variants: Vec<Vec<String>> = iproduct!(left, right).map(|(a, b)| vec![a, b]).collect();
     let mut finished: Vec<String> = Vec::new();
     for mut variant in variants {
@@ -131,7 +131,7 @@ pub fn new_buffer(mut size: u8) -> Vec<Vec<String>> {
     buffer
 }
 
-fn equalize(
+pub fn equalize(
     mut left: Vec<Vec<String>>,
     mut right: Vec<Vec<String>>,
 ) -> (Vec<Vec<String>>, Vec<Vec<String>>) {
@@ -144,7 +144,7 @@ fn equalize(
     (left, right)
 }
 
-fn reduce(propositions: Vec<Vec<Vec<String>>>, mode: String) -> String {
+pub fn reduce(propositions: Vec<Vec<Vec<String>>>, mode: String) -> String {
     let mut output: Vec<_> = Vec::new();
     for truth in &propositions {
         let mut t: Vec<_> = Vec::new();

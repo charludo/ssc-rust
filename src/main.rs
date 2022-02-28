@@ -1,6 +1,7 @@
 include!(concat!(env!("OUT_DIR"), "/grammar.rs"));
 use grammar::{Node, Rule};
 extern crate state;
+mod comparators;
 mod helpers;
 mod prefixes;
 
