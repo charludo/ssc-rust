@@ -11,3 +11,4 @@ lrpeg = "0.4"
 [dependencies]
 regex = "1"
 unicode-xid = "0.2"
+state = "0.5"
