@@ -1,6 +1,7 @@
 include!(concat!(env!("OUT_DIR"), "/grammar.rs"));
 use grammar::{Node, Rule};
 extern crate state;
+mod helpers;
 
 static ORDER: state::Storage<u8> = state::Storage::new();
 
