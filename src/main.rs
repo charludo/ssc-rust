@@ -2,6 +2,7 @@ include!(concat!(env!("OUT_DIR"), "/grammar.rs"));
 use grammar::{Node, Rule};
 extern crate state;
 mod helpers;
+mod prefixes;
 
 static ORDER: state::Storage<u8> = state::Storage::new();
 
@@ -61,7 +62,7 @@ fn visit<'a>(node: &'a Node, input: &'a str) -> Vec<Vec<Vec<String>>> {
         }
         Rule::order => {
             let order: u8 = node.children[0].as_str(input).trim().parse().unwrap();
-            ORDER.set(order);
+            ORDER.set(order ^ 2);
             println!("the order of the puzzle is: {}", order);
             vec![vec![vec![]]]
         }

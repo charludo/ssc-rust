@@ -1,3 +1,4 @@
+use crate::ORDER;
 use itertools::iproduct;
 use itertools::Itertools;
 use regex::Regex;
@@ -119,8 +120,11 @@ fn grouped(clause: String) -> String {
     return format!("( {} )", clause);
 }
 
-fn new_buffer(size: u8) -> Vec<Vec<String>> {
+pub fn new_buffer(mut size: u8) -> Vec<Vec<String>> {
     let mut buffer: Vec<_> = Vec::new();
+    if size < 2 {
+        size = *ORDER.get();
+    }
     for _ in 0..size {
         buffer.push(vec![]);
     }
