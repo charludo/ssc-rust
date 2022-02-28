@@ -3,6 +3,7 @@ use grammar::{Node, Rule};
 extern crate state;
 mod comparators;
 mod helpers;
+mod operators;
 mod prefixes;
 
 static ORDER: state::Storage<u8> = state::Storage::new();
