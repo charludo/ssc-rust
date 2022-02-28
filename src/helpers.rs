@@ -1,3 +1,4 @@
+use itertools::iproduct;
 use itertools::Itertools;
 use regex::Regex;
 use std::collections::HashSet;
@@ -51,6 +52,29 @@ fn is_allowed(left: String, right: String) -> bool {
         }
     }
     true
+}
+
+fn and_clause(left: Vec<String>, right: Vec<String>) -> Vec<String> {
+    let variants: Vec<Vec<String>> = iproduct!(left, right).map(|(a, b)| vec![a, b]).collect();
+    let mut finished: Vec<String> = Vec::new();
+    for mut variant in variants {
+        if variant.contains(&"False".to_owned()) {
+            variant = vec!["False".to_owned()];
+        } else if variant.contains(&"True".to_owned()) {
+            variant.retain(|x| x != &"True".to_owned());
+        } else if !!!is_allowed(variant[0].to_string(), variant[1].to_string()) {
+            continue;
+        }
+
+        if variant.len() > 1 {
+            finished.push(variant.join(" & "));
+        } else {
+            finished.push(variant[0].to_string());
+        }
+    }
+    let set: HashSet<_> = finished.drain(..).collect();
+    finished.extend(set.into_iter());
+    finished
 }
 
 fn simple_and(mut ks: Vec<String>) -> String {
@@ -114,4 +138,29 @@ fn equalize(
         right.push(vec!["False".to_owned()])
     }
     (left, right)
+}
+
+fn reduce(propositions: Vec<Vec<Vec<String>>>, mode: String) -> String {
+    let mut output: Vec<_> = Vec::new();
+    for truth in &propositions {
+        let mut t: Vec<_> = Vec::new();
+        for option in truth {
+            let mut o: Vec<_> = Vec::new();
+            for op in option {
+                if !!!op.contains("False") {
+                    o.push(op.clone());
+                }
+            }
+            if option.len() > 0 {
+                t.push(or_clause(o));
+            }
+        }
+        output.push(grouped(or_clause(t)));
+    }
+
+    if mode == "or" {
+        or_clause(output)
+    } else {
+        simple_and(output)
+    }
 }
