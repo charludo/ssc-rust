@@ -40,19 +40,19 @@ fn flatten_rec(node: Node, buffer: &mut Vec<Node>) {
     }
 }
 
-fn operator_placeholder1(left: &Vec<String>, right: &Vec<String>) -> Vec<String> {
-    vec!["some operator 1".to_owned()]
+fn operator_placeholder1(left: &Vec<Vec<String>>, right: &Vec<Vec<String>>) -> Vec<Vec<String>> {
+    vec![vec!["some operator 1".to_owned()]]
 }
 
-fn operator_placeholder2(left: &Vec<String>, right: &Vec<String>) -> Vec<String> {
-    vec!["some operator 2".to_owned()]
+fn operator_placeholder2(left: &Vec<Vec<String>>, right: &Vec<Vec<String>>) -> Vec<Vec<String>> {
+    vec![vec!["some operator 2".to_owned()]]
 }
 
-fn visit<'a>(node: &'a Node, input: &'a str) -> Vec<String> {
+fn visit<'a>(node: &'a Node, input: &'a str) -> Vec<Vec<Vec<String>>> {
     // println!("RULE: {:?\n}, VALUE: >{}<", node.rule, node.as_str(input));
     match node.rule {
         Rule::source => {
-            let mut truths: Vec<String> = Vec::new();
+            let mut truths: Vec<Vec<Vec<String>>> = Vec::new();
             for child in &node.children {
                 truths.append(&mut visit(child, input));
             }
@@ -62,7 +62,7 @@ fn visit<'a>(node: &'a Node, input: &'a str) -> Vec<String> {
             let order: u8 = node.children[0].as_str(input).trim().parse().unwrap();
             ORDER.set(order);
             println!("the order of the puzzle is: {}", order);
-            vec![]
+            vec![vec![vec![]]]
         }
         Rule::proposition => {
             let left = visit(&node.children[0], input);
@@ -72,13 +72,13 @@ fn visit<'a>(node: &'a Node, input: &'a str) -> Vec<String> {
             println!(">{:?}<", comparator);
 
             match comparator {
-                ">" => vec!["greater than".to_owned()],
-                _ => vec!["something else!".to_owned()],
+                ">" => vec![vec![vec!["greater than".to_owned()]]],
+                _ => vec![vec![vec!["something else!".to_owned()]]],
             }
         }
         Rule::builtin => {
             let prefix = node.children[0].as_str(input).trim();
-            let mut args: Vec<String> = Vec::new();
+            let mut args: Vec<Vec<Vec<String>>> = Vec::new();
             for arg in &node.children[1..] {
                 args.append(&mut visit(arg, input));
             }
@@ -86,8 +86,8 @@ fn visit<'a>(node: &'a Node, input: &'a str) -> Vec<String> {
             println!(">{:?}<", prefix);
 
             match prefix {
-                "!!" => vec!["distinct".to_owned()],
-                _ => vec!["something else!".to_owned()],
+                "!!" => vec![vec![vec!["distinct".to_owned()]]],
+                _ => vec![vec![vec!["something else!".to_owned()]]],
             }
         }
         Rule::expression => {
@@ -99,22 +99,22 @@ fn visit<'a>(node: &'a Node, input: &'a str) -> Vec<String> {
             let operator = node.children[1].as_str(input).trim();
             let right = visit(&node.children[2], input);
 
-            let op_fn: fn(left: &Vec<String>, right: &Vec<String>) -> Vec<String>;
+            let op_fn: fn(left: &Vec<Vec<String>>, right: &Vec<Vec<String>>) -> Vec<Vec<String>>;
             op_fn = match operator {
                 "+" => operator_placeholder1,
                 _ => operator_placeholder2,
             };
 
-            let mut results: Vec<String> = Vec::new();
-            for i in left {
-                for j in right {
-                    results.append(op_fn(i, j))
+            let mut results: Vec<Vec<Vec<String>>> = Vec::new();
+            for i in &left {
+                for j in &right {
+                    results.push(op_fn(&i, &j))
                 }
             }
             results
         }
         Rule::list => {
-            let mut values: Vec<String> = Vec::new();
+            let mut values: Vec<Vec<Vec<String>>> = Vec::new();
             for child in &node.children {
                 values.append(&mut visit(child, input));
             }
@@ -122,20 +122,20 @@ fn visit<'a>(node: &'a Node, input: &'a str) -> Vec<String> {
         }
         Rule::CELL => {
             let cell: &str = node.as_str(input).trim();
-            let mut atoms: Vec<String> = Vec::new();
+            let mut atoms: Vec<Vec<String>> = Vec::new();
             for i in 1..=*ORDER.get() {
-                atoms.push(format!("{}_{}", cell, i));
+                atoms.push(vec![format!("{}_{}", cell, i)]);
             }
-            atoms
+            vec![atoms]
         }
         Rule::NUMBER => {
             let n: u8 = node.as_str(input).trim().parse().unwrap();
-            let mut atoms: Vec<String> = Vec::new();
-            for i in 1..*ORDER.get() {
-                atoms.push("False".to_owned());
+            let mut atoms: Vec<Vec<String>> = Vec::new();
+            for _ in 1..n {
+                atoms.push(vec!["False".to_owned()]);
             }
-            atoms.push("True".to_owned());
-            atoms
+            atoms.push(vec!["True".to_owned()]);
+            vec![atoms]
         }
         _ => {
             println!("{:?\n}", node);
@@ -154,6 +154,7 @@ fn main() {
         std::process::exit(2);
     }
 
+    ORDER.set(3);
     let input = &args[1];
     println!("parsing: {}", input);
 
