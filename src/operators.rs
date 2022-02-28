@@ -11,7 +11,6 @@ pub fn operate(
         return or(left, right);
     }
 
-
     let op_fn: fn(left: usize, right: usize) -> (Vec<Vec<Vec<usize>>>, usize);
     op_fn = match operator {
         "+" => add,
