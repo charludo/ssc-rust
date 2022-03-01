@@ -56,28 +56,28 @@ fn add(left: usize, right: usize) -> (Vec<Vec<Vec<usize>>>, usize) {
     (legal_pairs, left + right)
 }
 
-fn sub(left: usize, right: usize) -> (Vec<Vec<Vec<usize>>>, usize) {
+fn sub(left: usize, _right: usize) -> (Vec<Vec<Vec<usize>>>, usize) {
     let mut legal_pairs: Vec<Vec<Vec<usize>>> = Vec::new();
-    for i in 0..left + right {
-        let options: Vec<Vec<usize>> = iproduct!(0..left, 0..right)
-            .filter(|(a, b)| a - b - 1 == i)
+    for i in 0..left {
+        let options: Vec<Vec<usize>> = iproduct!(0..left, 0..left)
+            .filter(|(a, b)| *a as i8 - *b as i8 - 1 == i as i8)
             .map(|(a, b)| vec![a, b])
             .collect();
         legal_pairs.push(options);
     }
-    (legal_pairs, left + right)
+    (legal_pairs, left)
 }
 
 fn mult(left: usize, right: usize) -> (Vec<Vec<Vec<usize>>>, usize) {
     let mut legal_pairs: Vec<Vec<Vec<usize>>> = Vec::new();
-    for i in 0..left + right {
+    for i in 0..left * right {
         let options: Vec<Vec<usize>> = iproduct!(0..left, 0..right)
             .filter(|(a, b)| (a + 1) * (b + 1) - 1 == i)
             .map(|(a, b)| vec![a, b])
             .collect();
         legal_pairs.push(options);
     }
-    (legal_pairs, left + right)
+    (legal_pairs, left * right)
 }
 
 fn or(left: Vec<Vec<String>>, right: Vec<Vec<String>>) -> Vec<Vec<String>> {
