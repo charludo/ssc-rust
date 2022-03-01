@@ -9,7 +9,7 @@ use std::process::Command;
 pub fn solve(path: &str) {
     let limboole: &str = "/home/charlotte/bachelorarbeit/limboole1.2/limboole";
     let mut satisfiable: bool = true;
-    let mut i: u8 = 0;
+    let mut i: u32 = 0;
     while satisfiable {
         let output = Command::new(limboole)
             .arg("-s")

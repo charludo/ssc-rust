@@ -7,6 +7,8 @@ mod helpers;
 mod interpreter;
 mod operators;
 mod prefixes;
+use std::fs;
+use std::io::{Error, Write};
 
 static ORDER: state::Storage<u8> = state::Storage::new();
 
@@ -135,7 +137,7 @@ fn visit<'a>(node: &'a Node, input: &'a str) -> Vec<Vec<Vec<String>>> {
     }
 }
 
-fn main() {
+fn main() -> Result<(), Error> {
     let mut parser = grammar::PEG::new();
 
     let args: Vec<String> = std::env::args().collect();
@@ -156,11 +158,19 @@ fn main() {
             let propositions = visit(&nodes[0], input);
             let formula: String = helpers::reduce(propositions, "and");
             let rules: String = base_rules::get_base_rules();
-            println!("{:?}", formula);
-            println!("{:?}", rules);
+
+            let path = "test.sat";
+            let mut file = fs::File::create(path)?;
+
+            if let Err(e) = write!(file, "{} & True & !ERR & {}", formula, rules) {
+                eprintln!("Couldn't write to file: {}", e);
+            }
+
+            interpreter::solve(path);
         }
         Err((line_no, col_no)) => {
             eprintln!("parser error at {}:{}", line_no, col_no);
         }
     }
+    Ok(())
 }

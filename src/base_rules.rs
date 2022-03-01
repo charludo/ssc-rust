@@ -60,7 +60,13 @@ pub fn get_base_rules() -> String {
     }
     let areas: String = and_clause(areas);
 
-    and_clause(vec![number_everywhere(), rows, cols, areas])
+    and_clause(vec![
+        number_everywhere(),
+        no_double_entries(),
+        rows,
+        cols,
+        areas,
+    ])
 }
 
 fn number_everywhere() -> String {
@@ -77,6 +83,24 @@ fn number_everywhere() -> String {
     and_clause(result)
 }
 
+fn no_double_entries() -> String {
+    let mut result: Vec<String> = Vec::new();
+    for i in ROWS.get() {
+        for j in COLS.get() {
+            let mut inner: Vec<String> = Vec::new();
+            for k1 in KS.get() {
+                for k2 in KS.get() {
+                    if k1 < k2 {
+                        inner.push(format!("(!{}{}_{} | !{}{}_{})", i, j, k1, i, j, k2))
+                    }
+                }
+            }
+            result.push(grouped(and_clause(inner)));
+        }
+    }
+    and_clause(result)
+}
+
 fn row(i: &String) -> String {
     let mut result: Vec<String> = Vec::new();
     for j1 in COLS.get() {
@@ -86,7 +110,7 @@ fn row(i: &String) -> String {
                 for k in KS.get() {
                     clause.push(format!("(!{}{}_{} | !{}{}_{})", i, j1, k, i, j2, k));
                 }
-                result.push(grouped(or_clause(clause)));
+                result.push(grouped(and_clause(clause)));
             }
         }
     }
@@ -102,7 +126,7 @@ fn col(j: &String) -> String {
                 for k in KS.get() {
                     clause.push(format!("(!{}{}_{} | !{}{}_{})", i1, j, k, i2, j, k));
                 }
-                result.push(grouped(or_clause(clause)));
+                result.push(grouped(and_clause(clause)));
             }
         }
     }
@@ -130,7 +154,7 @@ fn area(a: usize) -> String {
                 for k in KS.get() {
                     clause.push(format!("(!{}_{} | !{}_{})", p1, k, p2, k));
                 }
-                result.push(grouped(or_clause(clause)));
+                result.push(grouped(and_clause(clause)));
             }
         }
     }
