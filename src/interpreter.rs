@@ -39,6 +39,11 @@ pub fn solve(result: &str) {
     }
 }
 
+pub fn postprocess(output: &str) {
+    let (solution, _) = extract_solution(output.to_string());
+    prettify(solution);
+}
+
 fn extract_solution(output: String) -> (Vec<String>, Vec<String>) {
     let re = Regex::new(r"\n").unwrap();
     let output: String = re.replace_all(&output, "\n").to_string();

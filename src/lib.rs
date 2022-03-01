@@ -142,17 +142,16 @@ fn visit<'a>(node: &'a Node, input: &'a str) -> Vec<Vec<Vec<String>>> {
 pub fn compile(description: &str) -> String {
     let mut parser = grammar::PEG::new();
 
-    let args: Vec<String> = std::env::args().collect();
+    // let args: Vec<String> = std::env::args().collect();
 
-    if args.len() != 2 {
-        eprintln!("Usage {} DESCRIPTION", &args[0]);
-        std::process::exit(2);
-    }
+    // if args.len() != 2 {
+        // eprintln!("Usage {} DESCRIPTION", &args[0]);
+        // std::process::exit(2);
+    // }
 
     // let input = &fs::read_to_string(&args[1])?.replace('\n', "");
     // let input = &args[1];
     let input = &description.replace('\n', "");
-    let result: String;
 
     match parser.parse(input) {
         Ok(node) => {
@@ -171,8 +170,7 @@ pub fn compile(description: &str) -> String {
             // }
 
             // interpreter::solve(path);
-            result = format!("{} & True & !ERR & {}", formula, rules);
-            return result;
+            return format!("{} & True & !ERR & {}", formula, rules);
         }
         Err((line_no, col_no)) => {
             return format!("parser error at {}:{}", line_no, col_no);
@@ -182,7 +180,7 @@ pub fn compile(description: &str) -> String {
 
 #[wasm_bindgen]
 pub fn interpret(result: &str) {
-    interpreter::solve(result);
+    interpreter::postprocess(result);
 }
 
 #[wasm_bindgen]
