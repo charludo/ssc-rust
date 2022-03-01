@@ -44,14 +44,6 @@ fn flatten_rec(node: Node, buffer: &mut Vec<Node>) {
     }
 }
 
-fn operator_placeholder1(left: &Vec<Vec<String>>, right: &Vec<Vec<String>>) -> Vec<Vec<String>> {
-    vec![vec!["some operator 1".to_owned()]]
-}
-
-fn operator_placeholder2(left: &Vec<Vec<String>>, right: &Vec<Vec<String>>) -> Vec<Vec<String>> {
-    vec![vec!["some operator 2".to_owned()]]
-}
-
 fn visit<'a>(node: &'a Node, input: &'a str) -> Vec<Vec<Vec<String>>> {
     // println!("RULE: {:?\n}, VALUE: >{}<", node.rule, node.as_str(input));
     match node.rule {
@@ -73,12 +65,13 @@ fn visit<'a>(node: &'a Node, input: &'a str) -> Vec<Vec<Vec<String>>> {
             let comparator = node.children[1].as_str(input).trim();
             let right = visit(&node.children[2], input);
 
-            println!(">{:?}<", comparator);
-
-            match comparator {
-                ">" => vec![vec![vec!["greater than".to_owned()]]],
-                _ => vec![vec![vec!["something else!".to_owned()]]],
+            let mut results: Vec<Vec<Vec<String>>> = Vec::new();
+            for i in &left {
+                for j in &right {
+                    results.push(comparators::compare(i.to_vec(), comparator, j.to_vec()))
+                }
             }
+            results
         }
         Rule::builtin => {
             let prefix = node.children[0].as_str(input).trim();
@@ -87,12 +80,7 @@ fn visit<'a>(node: &'a Node, input: &'a str) -> Vec<Vec<Vec<String>>> {
                 args.append(&mut visit(arg, input));
             }
 
-            println!(">{:?}<", prefix);
-
-            match prefix {
-                "!!" => vec![vec![vec!["distinct".to_owned()]]],
-                _ => vec![vec![vec!["something else!".to_owned()]]],
-            }
+            return prefixes::builtin(prefix, args);
         }
         Rule::expression => {
             if node.children.len() == 1 {
@@ -103,16 +91,10 @@ fn visit<'a>(node: &'a Node, input: &'a str) -> Vec<Vec<Vec<String>>> {
             let operator = node.children[1].as_str(input).trim();
             let right = visit(&node.children[2], input);
 
-            let op_fn: fn(left: &Vec<Vec<String>>, right: &Vec<Vec<String>>) -> Vec<Vec<String>>;
-            op_fn = match operator {
-                "+" => operator_placeholder1,
-                _ => operator_placeholder2,
-            };
-
             let mut results: Vec<Vec<Vec<String>>> = Vec::new();
             for i in &left {
                 for j in &right {
-                    results.push(op_fn(&i, &j))
+                    results.push(operators::operate(i.to_vec(), operator, j.to_vec()));
                 }
             }
             results
@@ -166,8 +148,10 @@ fn main() {
         Ok(node) => {
             let mut nodes: Vec<Node> = Vec::new();
             flatten_rec(node, &mut nodes);
-            // println!("{:?}", nodes);
-            println!("result: {:?}", visit(&nodes[0], input));
+
+            let propositions = visit(&nodes[0], input);
+            let formula: String = helpers::reduce(propositions, "and");
+            println!("{:?}", formula);
         }
         Err((line_no, col_no)) => {
             eprintln!("parser error at {}:{}", line_no, col_no);

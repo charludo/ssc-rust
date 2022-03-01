@@ -1,5 +1,13 @@
 use crate::helpers;
 
+pub fn builtin(prefix: &str, args: Vec<Vec<Vec<String>>>) -> Vec<Vec<Vec<String>>> {
+    match prefix {
+        "!!" => distinct(args),
+        "~~" => unique(args),
+        _ => unreachable!(),
+    }
+}
+
 fn distinct(args: Vec<Vec<Vec<String>>>) -> Vec<Vec<Vec<String>>> {
     let mut fields: Vec<Vec<String>> = Vec::new();
     for field in args {

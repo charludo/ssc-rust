@@ -144,7 +144,7 @@ pub fn equalize(
     (left, right)
 }
 
-pub fn reduce(propositions: Vec<Vec<Vec<String>>>, mode: String) -> String {
+pub fn reduce(propositions: Vec<Vec<Vec<String>>>, mode: &str) -> String {
     let mut output: Vec<_> = Vec::new();
     for truth in &propositions {
         let mut t: Vec<_> = Vec::new();

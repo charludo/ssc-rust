@@ -2,7 +2,24 @@ use crate::helpers;
 use itertools::iproduct;
 use std::collections::HashSet;
 
-pub fn eq(left: Vec<Vec<String>>, right: Vec<Vec<String>>) -> Vec<Vec<String>> {
+pub fn compare(
+    left: Vec<Vec<String>>,
+    comparator: &str,
+    right: Vec<Vec<String>>,
+) -> Vec<Vec<String>> {
+    match comparator {
+        "=" => eq(left, right),
+        "!=" => neq(left, right),
+        "<" => lt(left, right, 0),
+        "<=" => lt(left, right, 1),
+        ">" => gt(left, right, 1),
+        ">=" => gt(left, right, 0),
+        "||" => por(left, right),
+        _ => unreachable!(),
+    }
+}
+
+fn eq(left: Vec<Vec<String>>, right: Vec<Vec<String>>) -> Vec<Vec<String>> {
     let len_left = left.len();
     let mut buffer = helpers::new_buffer(len_left as u8);
     let (left, right) = helpers::equalize(left, right);
@@ -18,7 +35,7 @@ pub fn eq(left: Vec<Vec<String>>, right: Vec<Vec<String>>) -> Vec<Vec<String>> {
     buffer
 }
 
-pub fn neq(left: Vec<Vec<String>>, right: Vec<Vec<String>>) -> Vec<Vec<String>> {
+fn neq(left: Vec<Vec<String>>, right: Vec<Vec<String>>) -> Vec<Vec<String>> {
     let len_left = left.len();
     let len_right = right.len();
     let mut buffer = helpers::new_buffer(len_left as u8);
@@ -42,7 +59,7 @@ pub fn neq(left: Vec<Vec<String>>, right: Vec<Vec<String>>) -> Vec<Vec<String>> 
     buffer
 }
 
-pub fn lt(left: Vec<Vec<String>>, right: Vec<Vec<String>>, offset: usize) -> Vec<Vec<String>> {
+fn lt(left: Vec<Vec<String>>, right: Vec<Vec<String>>, offset: usize) -> Vec<Vec<String>> {
     let len_right = right.len();
     let mut buffer = helpers::new_buffer(len_right as u8);
     let (left, right) = helpers::equalize(left, right);
@@ -68,7 +85,7 @@ pub fn lt(left: Vec<Vec<String>>, right: Vec<Vec<String>>, offset: usize) -> Vec
     result
 }
 
-pub fn gt(left: Vec<Vec<String>>, right: Vec<Vec<String>>, offset: usize) -> Vec<Vec<String>> {
+fn gt(left: Vec<Vec<String>>, right: Vec<Vec<String>>, offset: usize) -> Vec<Vec<String>> {
     let len_left = right.len();
     let mut buffer = helpers::new_buffer(len_left as u8);
     let (left, right) = helpers::equalize(left, right);
@@ -94,6 +111,6 @@ pub fn gt(left: Vec<Vec<String>>, right: Vec<Vec<String>>, offset: usize) -> Vec
     result
 }
 
-pub fn por(left: Vec<Vec<String>>, right: Vec<Vec<String>>) -> Vec<Vec<String>> {
-    return vec![vec![helpers::reduce(vec![left, right], "or".to_owned())]];
+fn por(left: Vec<Vec<String>>, right: Vec<Vec<String>>) -> Vec<Vec<String>> {
+    return vec![vec![helpers::reduce(vec![left, right], "or")]];
 }

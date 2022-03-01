@@ -16,9 +16,7 @@ pub fn operate(
         "+" => add,
         "-" => sub,
         "*" => mult,
-        _ => {
-            unreachable!()
-        }
+        _ => unreachable!(),
     };
 
     let (value_map, max_len) = op_fn(left.len(), right.len());
