@@ -8,7 +8,7 @@ order <- "#" NUMBER;
 proposition <- ((expression / proposition) COMPARATOR (expression / proposition))
 			/ ("(" (expression / proposition) COMPARATOR (expression / proposition) ")");
 
-expression <- ("(" expression OPERATOR expression ")") / (expression OPERATOR expression) / value;
+expression <- (expression OPERATOR expression) / ("(" expression OPERATOR expression ")") / value;
 
 builtin <- PREFIX ((CELL ","? (CELL ","?)+) / ("(" CELL ","? (CELL ","?)+ ")"));
 

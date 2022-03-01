@@ -19,7 +19,6 @@ fn grouped(clause: String) -> String {
 }
 
 pub fn get_base_rules() -> String {
-    println!("the actual order is: {}", *ORDER.get());
     KS.set((1..=*ORDER.get()).collect());
     let mut rows: Vec<String> = Vec::new();
     for i in 0..*ORDER.get() {

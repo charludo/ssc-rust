@@ -147,8 +147,8 @@ fn main() -> Result<(), Error> {
         std::process::exit(2);
     }
 
-    let input = &args[1];
-    println!("parsing: {}", input);
+    let input = &fs::read_to_string(&args[1])?.replace('\n', "");
+    // let input = &args[1];
 
     match parser.parse(input) {
         Ok(node) => {
