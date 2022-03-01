@@ -1,23 +1,19 @@
 use crate::base_rules::ROWS;
+use crate::display;
+use crate::limboole;
 use crate::ORDER;
 use regex::Regex;
-use std::fs;
-use std::io::prelude::*;
+// use std::fs;
+// use std::io::prelude::*;
 use std::iter::repeat;
-use std::process::Command;
+// use std::process::Command;
 
-pub fn solve(path: &str) {
-    let limboole: &str = "/home/charlotte/bachelorarbeit/limboole1.2/limboole";
+pub fn solve(result: &str) {
     let mut satisfiable: bool = true;
     let mut i: u32 = 0;
+    let mut result = String::from(result);
     while satisfiable {
-        let output = Command::new(limboole)
-            .arg("-s")
-            .arg(path)
-            .output()
-            .expect("limboole error");
-        let output = String::from_utf8_lossy(&output.stdout).to_string();
-
+        let output: String = limboole(&result);
         if output.contains("UNSATISFIABLE formula") {
             satisfiable = false;
             continue;
@@ -25,24 +21,21 @@ pub fn solve(path: &str) {
 
         let (solution, prefills) = extract_solution(output);
         i += 1;
-        println!("Solution #{}:", i);
+        display(format!("Solution #{}:", i));
         prettify(solution);
 
         let prefills = format!(" & !({})", prefills.join(" & "));
-
-        let mut file = fs::OpenOptions::new().append(true).open(path).unwrap();
-
-        if let Err(e) = writeln!(file, "{}", prefills) {
-            eprintln!("Couldn't write to file: {}", e);
-        }
+        result = format!("{}{}", result, prefills);
     }
     match i {
-        0 => println!("Sudoku is unsatisfiable."),
-        1 => println!("Sudoku is uniquely solvable. No further solutions exist."),
-        _ => println!(
+        0 => display(format!("Sudoku is unsatisfiable.")),
+        1 => display(format!(
+            "Sudoku is uniquely solvable. No further solutions exist."
+        )),
+        _ => display(format!(
             "No further solutions exist. Total number of solutions: {}",
             i
-        ),
+        )),
     }
 }
 
@@ -85,8 +78,8 @@ fn prettify(solution: Vec<String>) {
         .join(" | ");
     let header: String = format!("     {}", border);
 
-    println!();
-    println!("{}", header);
+    display(String::new());
+    display(format!("{}", header));
 
     let o: usize = *ORDER.get() as usize;
 
@@ -111,7 +104,7 @@ fn prettify(solution: Vec<String>) {
             }
         }
         let line: String = line.join(" ");
-        println!("   | {}", line);
+        display(format!("   | {}", line));
 
         if (0..o - 1)
             .collect::<Vec<usize>>()
@@ -121,8 +114,8 @@ fn prettify(solution: Vec<String>) {
             .collect::<Vec<usize>>()
             .contains(&i)
         {
-            println!("   -");
+            display(format!("   -"));
         }
     }
-    println!();
+    display(String::new());
 }

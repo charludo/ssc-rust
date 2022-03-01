@@ -8,8 +8,12 @@ edition = "2021"
 [build-dependencies]
 lrpeg = "0.4"
 
+[lib]
+crate-type = ["cdylib"]
+
 [dependencies]
 regex = "1"
 unicode-xid = "0.2"
 state = "0.5"
 itertools = "0.9.0"
+wasm-bindgen = "0.2"

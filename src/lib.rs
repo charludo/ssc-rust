@@ -7,8 +7,9 @@ mod helpers;
 mod interpreter;
 mod operators;
 mod prefixes;
-use std::fs;
-use std::io::{Error, Write};
+// use std::fs;
+// use std::io::{Error, Write};
+use wasm_bindgen::prelude::*;
 
 static ORDER: state::Storage<u8> = state::Storage::new();
 
@@ -137,7 +138,8 @@ fn visit<'a>(node: &'a Node, input: &'a str) -> Vec<Vec<Vec<String>>> {
     }
 }
 
-fn main() -> Result<(), Error> {
+#[wasm_bindgen]
+pub fn compile(description: &str) -> String {
     let mut parser = grammar::PEG::new();
 
     let args: Vec<String> = std::env::args().collect();
@@ -147,8 +149,10 @@ fn main() -> Result<(), Error> {
         std::process::exit(2);
     }
 
-    let input = &fs::read_to_string(&args[1])?.replace('\n', "");
+    // let input = &fs::read_to_string(&args[1])?.replace('\n', "");
     // let input = &args[1];
+    let input = &description.replace('\n', "");
+    let result: String;
 
     match parser.parse(input) {
         Ok(node) => {
@@ -159,18 +163,30 @@ fn main() -> Result<(), Error> {
             let formula: String = helpers::reduce(propositions, "and");
             let rules: String = base_rules::get_base_rules();
 
-            let path = "test.sat";
-            let mut file = fs::File::create(path)?;
+            // let path = "test.sat";
+            // let mut file = fs::File::create(path)?;
 
-            if let Err(e) = write!(file, "{} & True & !ERR & {}", formula, rules) {
-                eprintln!("Couldn't write to file: {}", e);
-            }
+            // if let Err(e) = write!(file, "{} & True & !ERR & {}", formula, rules) {
+            // eprintln!("Couldn't write to file: {}", e);
+            // }
 
-            interpreter::solve(path);
+            // interpreter::solve(path);
+            result = format!("{} & True & !ERR & {}", formula, rules);
+            return result;
         }
         Err((line_no, col_no)) => {
-            eprintln!("parser error at {}:{}", line_no, col_no);
+            return format!("parser error at {}:{}", line_no, col_no);
         }
     }
-    Ok(())
+}
+
+#[wasm_bindgen]
+pub fn interpret(result: &str) {
+    interpreter::solve(result);
+}
+
+#[wasm_bindgen]
+extern "C" {
+    pub fn limboole(s: &str) -> String;
+    pub fn display(s: String);
 }
