@@ -2,7 +2,7 @@ use crate::ORDER;
 extern crate state;
 
 static KS: state::Storage<Vec<u8>> = state::Storage::new();
-static ROWS: state::Storage<Vec<String>> = state::Storage::new();
+pub static ROWS: state::Storage<Vec<String>> = state::Storage::new();
 static COLS: state::Storage<Vec<String>> = state::Storage::new();
 static ORD: state::Storage<u8> = state::Storage::new();
 

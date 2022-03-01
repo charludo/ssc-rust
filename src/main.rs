@@ -4,6 +4,7 @@ extern crate state;
 mod base_rules;
 mod comparators;
 mod helpers;
+mod interpreter;
 mod operators;
 mod prefixes;
 
