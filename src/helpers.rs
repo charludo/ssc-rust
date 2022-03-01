@@ -63,6 +63,9 @@ pub fn and_clause(left: Vec<String>, right: Vec<String>) -> Vec<String> {
             variant = vec!["False".to_owned()];
         } else if variant.contains(&"True".to_owned()) {
             variant.retain(|x| x != &"True".to_owned());
+            if variant.len() == 0 {
+                variant = vec!["True".to_owned()];
+            }
         } else if !!!is_allowed(variant[0].to_string(), variant[1].to_string()) {
             continue;
         }
@@ -104,7 +107,7 @@ fn or_clause(mut ks: Vec<String>) -> String {
         if is_atomic(k) || k.starts_with("(") {
             clause.push(k.to_string());
         } else {
-            clause.push(format!("( {} )", k));
+            clause.push(format!("({})", k));
         }
     }
     return clause.iter().join(" | ");
@@ -117,7 +120,7 @@ fn grouped(clause: String) -> String {
     if is_atomic(&clause) {
         return clause;
     }
-    return format!("( {} )", clause);
+    return format!("({})", clause);
 }
 
 pub fn new_buffer(mut size: u8) -> Vec<Vec<String>> {
@@ -155,7 +158,7 @@ pub fn reduce(propositions: Vec<Vec<Vec<String>>>, mode: &str) -> String {
                     o.push(op.clone());
                 }
             }
-            if option.len() > 0 {
+            if o.len() > 0 {
                 t.push(or_clause(o));
             }
         }

@@ -110,7 +110,7 @@ fn visit<'a>(node: &'a Node, input: &'a str) -> Vec<Vec<Vec<String>>> {
             let cell: &str = node.as_str(input).trim();
             let mut atoms: Vec<Vec<String>> = Vec::new();
             for i in 1..=*ORDER.get() {
-                atoms.push(vec![format!("{}_{}", cell, i)]);
+                atoms.push(vec![format!("{}_{}", cell.trim(), i)]);
             }
             vec![atoms]
         }
@@ -140,7 +140,7 @@ fn main() {
         std::process::exit(2);
     }
 
-    ORDER.set(3);
+    ORDER.set(9);
     let input = &args[1];
     println!("parsing: {}", input);
 

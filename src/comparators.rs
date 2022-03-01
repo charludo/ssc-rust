@@ -86,7 +86,7 @@ fn lt(left: Vec<Vec<String>>, right: Vec<Vec<String>>, offset: usize) -> Vec<Vec
 }
 
 fn gt(left: Vec<Vec<String>>, right: Vec<Vec<String>>, offset: usize) -> Vec<Vec<String>> {
-    let len_left = right.len();
+    let len_left = left.len();
     let mut buffer = helpers::new_buffer(len_left as u8);
     let (left, right) = helpers::equalize(left, right);
 
