@@ -1,6 +1,7 @@
 include!(concat!(env!("OUT_DIR"), "/grammar.rs"));
 use grammar::{Node, Rule};
 extern crate state;
+mod base_rules;
 mod comparators;
 mod helpers;
 mod operators;
@@ -48,6 +49,9 @@ fn visit<'a>(node: &'a Node, input: &'a str) -> Vec<Vec<Vec<String>>> {
     // println!("RULE: {:?\n}, VALUE: >{}<", node.rule, node.as_str(input));
     match node.rule {
         Rule::source => {
+            if node.children[0].rule != Rule::order {
+                ORDER.set(9);
+            }
             let mut truths: Vec<Vec<Vec<String>>> = Vec::new();
             for child in &node.children {
                 truths.append(&mut visit(child, input));
@@ -56,9 +60,9 @@ fn visit<'a>(node: &'a Node, input: &'a str) -> Vec<Vec<Vec<String>>> {
         }
         Rule::order => {
             let order: u8 = node.children[0].as_str(input).trim().parse().unwrap();
-            ORDER.set(order ^ 2);
+            ORDER.set(u8::pow(order, 2));
             println!("the order of the puzzle is: {}", order);
-            vec![vec![vec![]]]
+            vec![vec![vec!["True".to_owned()]]]
         }
         Rule::proposition => {
             let left = visit(&node.children[0], input);
@@ -140,7 +144,6 @@ fn main() {
         std::process::exit(2);
     }
 
-    ORDER.set(9);
     let input = &args[1];
     println!("parsing: {}", input);
 
@@ -151,7 +154,9 @@ fn main() {
 
             let propositions = visit(&nodes[0], input);
             let formula: String = helpers::reduce(propositions, "and");
+            let rules: String = base_rules::get_base_rules();
             println!("{:?}", formula);
+            println!("{:?}", rules);
         }
         Err((line_no, col_no)) => {
             eprintln!("parser error at {}:{}", line_no, col_no);
