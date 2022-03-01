@@ -5,8 +5,8 @@ NEWLINE <- (re#[\r\n]#);
 COMMENT <- "--" (re#[^\r\n]# .)*;
 
 order <- "#" NUMBER;
-proposition <- ("(" (expression / proposition) COMPARATOR (expression / proposition) ")")
-				/ (expression / proposition) COMPARATOR (expression / proposition);
+proposition <- ((expression / proposition) COMPARATOR (expression / proposition))
+			/ ("(" (expression / proposition) COMPARATOR (expression / proposition) ")");
 
 expression <- ("(" expression OPERATOR expression ")") / (expression OPERATOR expression) / value;
 

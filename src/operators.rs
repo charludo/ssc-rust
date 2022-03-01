@@ -91,12 +91,10 @@ fn or(left: Vec<Vec<String>>, right: Vec<Vec<String>>) -> Vec<Vec<String>> {
         let mut set: HashSet<_> = combined.to_vec().drain(..).collect();
         set.remove("False");
         combined.extend(set.into_iter());
+        println!("combined: {:?}", combined);
 
-        if combined.len() > 0 {
-            buffer.push(vec!["False".to_owned()]);
-        } else {
-            buffer.push(combined)
-        }
+        buffer.push(combined)
     }
+    println!("buffer: {:?}", buffer);
     buffer
 }
