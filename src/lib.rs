@@ -145,8 +145,8 @@ pub fn compile(description: &str) -> String {
     // let args: Vec<String> = std::env::args().collect();
 
     // if args.len() != 2 {
-        // eprintln!("Usage {} DESCRIPTION", &args[0]);
-        // std::process::exit(2);
+    // eprintln!("Usage {} DESCRIPTION", &args[0]);
+    // std::process::exit(2);
     // }
 
     // let input = &fs::read_to_string(&args[1])?.replace('\n', "");
@@ -179,12 +179,12 @@ pub fn compile(description: &str) -> String {
 }
 
 #[wasm_bindgen]
-pub fn interpret(result: &str) {
-    interpreter::postprocess(result);
+pub fn interpret(r: String, i: u32) -> bool {
+    return interpreter::solve(r, i);
 }
 
 #[wasm_bindgen]
 extern "C" {
-    pub fn limboole(s: &str) -> String;
     pub fn display(s: String);
+    pub fn append_prefills(s: String);
 }

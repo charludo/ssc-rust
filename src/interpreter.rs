@@ -1,6 +1,6 @@
+use crate::append_prefills;
 use crate::base_rules::ROWS;
 use crate::display;
-use crate::limboole;
 use crate::ORDER;
 use regex::Regex;
 // use std::fs;
@@ -8,41 +8,35 @@ use regex::Regex;
 use std::iter::repeat;
 // use std::process::Command;
 
-pub fn solve(result: &str) {
-    let mut satisfiable: bool = true;
-    let mut i: u32 = 0;
-    let mut result = String::from(result);
-    while satisfiable {
-        let output: String = limboole(&result);
-        if output.contains("UNSATISFIABLE formula") {
-            satisfiable = false;
-            continue;
+pub fn solve(output: String, i: u32) -> bool {
+    if output.contains("UNSATISFIABLE formula") {
+        match i {
+            0 => display(format!("Sudoku is unsatisfiable.")),
+            1 => display(format!(
+                "Sudoku is uniquely solvable. No further solutions exist."
+            )),
+            _ => display(format!(
+                "No further solutions exist. Total number of solutions: {}",
+                i
+            )),
         }
-
-        let (solution, prefills) = extract_solution(output);
-        i += 1;
-        display(format!("Solution #{}:", i));
-        prettify(solution);
-
-        let prefills = format!(" & !({})", prefills.join(" & "));
-        result = format!("{}{}", result, prefills);
+        return false;
     }
-    match i {
-        0 => display(format!("Sudoku is unsatisfiable.")),
-        1 => display(format!(
-            "Sudoku is uniquely solvable. No further solutions exist."
-        )),
-        _ => display(format!(
-            "No further solutions exist. Total number of solutions: {}",
-            i
-        )),
-    }
-}
 
-pub fn postprocess(output: &str) {
-    let (solution, _) = extract_solution(output.to_string());
+    let (solution, prefills) = extract_solution(output);
+    display(format!("Solution #{}:", i + 1));
     prettify(solution);
+
+    let prefills = format!(" & !({})", prefills.join(" & "));
+    append_prefills(prefills);
+
+    return true;
 }
+
+// pub fn postprocess(output: &str) {
+//     let (solution, _) = extract_solution(output.to_string());
+//     prettify(solution);
+// }
 
 fn extract_solution(output: String) -> (Vec<String>, Vec<String>) {
     let re = Regex::new(r"\n").unwrap();
